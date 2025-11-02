@@ -45,7 +45,31 @@
                 <div class="stat-label">Total Attendance 🏟️</div>
             </div>
         </div>
-  
+
+        <!-- League Leaderboard -->
+        <div class="leaderboard-section">
+            <h2>League Leaderboard (Most Successful Teams) 🏆</h2>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Team</th>
+                        <th>Wins</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in leaderboard %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ entry.Team }}</td>
+                        <td>{{ entry.Wins }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <br>
 
         <!-- Charts -->
         <div class="chart-grid">

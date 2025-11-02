@@ -31,6 +31,15 @@ def index():
 
     # Total Attendance (sum of all matches)
     total_attendance = int(df['Attendance'].sum())
+    
+    # Most successful team (by total wins, excluding draws)
+    team_wins = df[df['winner'].notna() & (df['winner'].str.lower() != 'draw')]['winner'].value_counts().reset_index()
+    team_wins.columns = ['Team', 'Wins']
+    most_successful_team = team_wins.iloc[0]['Team'] if not team_wins.empty else "N/A"
+
+    # League Leaderboard (Top 5 Teams)
+    leaderboard = team_wins.head(5).to_dict(orient='records')
+
 
 
     # ====================== CHARTS ===========================================
@@ -104,15 +113,19 @@ def index():
     graphs = [fig.to_html(full_html=False) for fig in [fig1, fig2, fig3, fig4, fig5, fig6]]
 
     # ==================== Render to Template ====================
-    return render_template('index.html',
-                       all_season_total_matches=all_season_total_matches,
-                       total_seasons=total_seasons,
-                       total_goals=total_goals,
-                       avg_attendance=avg_attendance,
-                       most_successful_team=most_successful_team,
-                       avg_goals_per_match=avg_goals_per_match,
-                       total_attendance=total_attendance,
-                       graphs=graphs)
+    return render_template(
+        'index.html',
+        all_season_total_matches=all_season_total_matches,
+        total_seasons=total_seasons,
+        total_goals=total_goals,
+        avg_attendance=avg_attendance,
+        avg_goals_per_match=avg_goals_per_match,
+        total_attendance=total_attendance,
+        most_successful_team=most_successful_team,
+        leaderboard=leaderboard,
+        graphs=graphs
+    )
+
 
 
 

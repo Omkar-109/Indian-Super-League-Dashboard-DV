@@ -1,101 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <title>ISL Analytics Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
     <div class="container">
         <div class="header">
             <h1>⚽ Indian Super League ⚽</h1>
             <p>Comprehensive Analytics Dashboard</p>
             <div class="nav-tabs">
-                <a href="{{ url_for('index') }}"
-                    class="tab {% if request.endpoint == 'index' %}active{% endif %}">Matches Stat</a>
-                <a href="{{ url_for('player_stat') }}"
-                    class="tab {% if request.endpoint == 'player_stat' %}active{% endif %}">Player Stats</a>
+                <a href="{{ url_for('index') }}" class="tab {% if request.endpoint == 'index' %}active{% endif %}">Matches Stat</a>
+                <a href="{{ url_for('player_stat') }}" class="tab {% if request.endpoint == 'player_stat' %}active{% endif %}">Player Stats</a>
             </div>
-
         </div>
-        <h1>All Seasons Matches Statistics Page</h1><br>
 
-        <!-- ================================= Text based output ======================================== -->
+        <h2>All Seasons Match Statistics</h2>
+        <br>
+
+        <!-- Text Outputs -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number"> {{ all_season_total_matches|safe }} </div>
-                <div class="stat-label">All Seasons Total Matches</div>
+                <div class="stat-number">{{ all_season_total_matches }}</div>
+                <div class="stat-label">Total Matches Played 🎮</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number"> {{ total_seasons|safe }} </div>
-                <div class="stat-label">Total Seasons</div>
+                <div class="stat-number">{{ total_seasons }}</div>
+                <div class="stat-label">Total Seasons 📅</div>
             </div>
             <div class="stat-card">
-
+                <div class="stat-number">{{ total_goals }}</div>
+                <div class="stat-label">Total Goals Scored ⚽</div>
             </div>
             <div class="stat-card">
-
+                <div class="stat-number">{{ avg_attendance }}</div>
+                <div class="stat-label">Average Attendance 👥</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ avg_goals_per_match }}</div>
+                <div class="stat-label">Average Goals per Match 🎯</div>
+            </div>
+            <div class="stat-card highlight">
+                <div class="stat-number">{{ "{:,}".format(total_attendance) }}</div>
+                <div class="stat-label">Total Attendance 🏟️</div>
             </div>
         </div>
+  
 
-
-        <!-- ================================== Charts based output ======================================= -->
+        <!-- Charts -->
         <div class="chart-grid">
-            <div class="chart">
-                {{ graph_html1|safe }}
-            </div>
-
-            <div class="chart-row-2">
-                <div class="chart">
-                    {{ graph_html2|safe }}
-                </div>
-                <div class="chart">
-                    {{ graph_html3|safe }}
-                </div>
-            </div>
-
-            <div class="chart-row-2">
-                <div class="chart">
-                    {{ graph_html4|safe }}
-                </div>
-                <div class="chart">
-                    {{ graph_html5|safe }}
-                </div>
-            </div>
-
-            <div class="chart">
-                {{ graph_html7|safe }}
-            </div>
-
-
+            {% for g in graphs %}
+            <div class="chart">{{ g|safe }}</div>
+            {% endfor %}
         </div>
 
         <div class="footer">
-            <p>© 2025 Indian Super League Analytics Dashboard | Data Visualization ISA</p>
-            <p>Data from ISL Matches 2014-2025 | Built with Flask & Plotly</p>
+            <p>© 2025 Indian Super League Analytics Dashboard | Flask + Plotly</p>
+            <p>Data Source: ISL Matches 2014–2025</p>
         </div>
     </div>
 
-
     <script>
-        window.addEventListener('load', function () {
-            // This triggers Plotly to recalculate the chart size
+        window.addEventListener('load', function() {
             const charts = document.querySelectorAll('.chart div.js-plotly-plot');
-            charts.forEach(chart => {
-                Plotly.Plots.resize(chart);
-            });
+            charts.forEach(chart => Plotly.Plots.resize(chart));
         });
-
-        // Also fix when window resizes
-        window.addEventListener('resize', function () {
+        window.addEventListener('resize', function() {
             const charts = document.querySelectorAll('.chart div.js-plotly-plot');
-            charts.forEach(chart => {
-                Plotly.Plots.resize(chart);
-            });
+            charts.forEach(chart => Plotly.Plots.resize(chart));
         });
     </script>
-
 </body>
-
 </html>

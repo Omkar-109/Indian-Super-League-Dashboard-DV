@@ -6,6 +6,7 @@ from plotly.subplots import make_subplots
 
 app = Flask(__name__)
 
+# home as well as matches stat dashboard
 @app.route('/')
 def index():
     # ==================== LOAD DATA ====================
@@ -103,6 +104,120 @@ def index():
                                  graph_html3=graph_html3,
                                  graph_html4=graph_html4,
                                  graph_html5=graph_html5)
+
+# player stat dashboard
+@app.route('/playerStat')
+def player_stat():
+
+    # ==================== LOAD DATA ====================
+    df_players = pd.read_csv('data/transformed_isl_player24_25_dataset.csv')
+    # Clean column names
+    df_players.columns = df_players.columns.str.strip().str.replace('\xa0', ' ').str.replace(' ', '_')
+
+    # =================== TEXT BASED OUTPUTS ==================================
+    total_goals = df_players["Goals"].sum()
+    total_assists = df_players["Assists"].sum()
+    total_yellow_cards = df_players["Yellow_Cards"].sum()
+    total_red_cards = df_players["Red_Cards"].sum()
+
+    # ====================== CHARTS ===========================================
+
+    # ============== Top 10 scorers ===========================
+    top_goals = df_players.sort_values("Goals", ascending=False).head(10)
+    p_fig1 = px.bar(top_goals, x="Player", y="Goals", color="Squad",
+              title="Top 10 Goal Scorers", text="Goals")
+    p_fig1.update_traces(textposition='outside')
+    p_fig1.update_layout(template='plotly_white')
+
+    # ============= Top 5 assist providers =================
+    top_assists = df_players.sort_values("Assists", ascending=False).head(5)
+    p_fig2 = px.bar(top_assists, x="Player", y="Assists", color="Squad",
+              title="Top 5 Assist Providers", text="Assists")
+    p_fig2.update_traces(textposition='outside')
+    p_fig2.update_layout(template='plotly_white')
+    
+    # ============ Top 5 Players by Appearances ====================
+    top_appearances = df_players.sort_values("Matches_Played", ascending=False).head(5)
+    p_fig3 = px.bar(top_appearances, x="Player", y="Matches_Played", color="Squad",
+              title="Top 5 Players by Appearances", text="Matches_Played")
+    p_fig3.update_traces(textposition='outside')
+    p_fig3.update_layout(template='plotly_white')
+
+    # ============== Top 5 Players by Starts ========================
+    top_starts = df_players.sort_values("Starts", ascending=False).head(5)
+    p_fig4 = px.bar(top_starts, x="Player", y="Starts", color="Squad",
+              title="Top 5 Players by Starts", text="Starts")
+    p_fig4.update_traces(textposition='outside')
+    p_fig4.update_layout(template='plotly_white')
+
+    # =============== Average Age of Players by Club =================
+    avg_age_club = df_players.groupby("Squad")["Age"].mean().reset_index()
+    p_fig5 = px.bar(avg_age_club, x="Age", y="Squad",orientation='h', color="Squad",
+              title="Average Age of Players by Club", text="Age")
+    p_fig5.update_traces(texttemplate='%{text:.1f}', textposition='outside')
+    p_fig5.update_layout(xaxis={'categoryorder':'total descending'})
+    p_fig5.update_layout(template='plotly_white')
+
+
+    # ============================ Top 5 Clubs by Total Goals ================
+    club_goals = df_players.groupby("Squad")["Goals"].sum().reset_index()
+    top5_clubs_goals = club_goals.sort_values("Goals", ascending=False).head(5)
+    p_fig6 = px.bar(top5_clubs_goals, x="Squad", y="Goals", color="Squad",
+              title="Top 5 Clubs by Total Goals", text="Goals")
+    p_fig6.update_traces(textposition='outside')
+    p_fig6.update_layout(template='plotly_white')
+
+    # ======================= India vs Foreign Players ========================
+    # Extract nationality info — 'inIND' for Indian, others for foreign
+    df_players['Player_Type'] = df_players['Nation'].apply(lambda x: 'Indian' if 'in' in x.lower() else 'Foreign')
+
+    player_counts = df_players['Player_Type'].value_counts().reset_index()
+    player_counts.columns = ['Type', 'Count']
+
+    p_fig7 = px.pie(player_counts, names='Type', values='Count',
+              color='Type', title="Indian vs Foreign Players Distribution",
+              color_discrete_map={'Indian':'#008000', 'Foreign':'#FF6347'})
+    p_fig7.update_layout(template='plotly_white')
+
+
+
+
+
+
+
+    # ==================== Generate HTML for all charts ====================
+    p_graph_html1 = p_fig1.to_html(full_html=False)
+    p_graph_html2 = p_fig2.to_html(full_html=False)
+    p_graph_html3 = p_fig3.to_html(full_html=False)
+    p_graph_html4 = p_fig4.to_html(full_html=False)
+    p_graph_html5 = p_fig5.to_html(full_html=False)
+    p_graph_html6 = p_fig6.to_html(full_html=False)
+    p_graph_html7 = p_fig7.to_html(full_html=False)
+
+
+
+
+
+
+
+
+    return render_template('playerStat.html',
+                           total_goals=total_goals,
+                           total_assists=total_assists,
+                           total_yellow_cards=total_yellow_cards,
+                           total_red_cards=total_red_cards,
+                           
+                           p_graph_html1=p_graph_html1,
+                           p_graph_html2=p_graph_html2,
+                           p_graph_html3=p_graph_html3,
+                           p_graph_html4=p_graph_html4,
+                           p_graph_html5=p_graph_html5,
+                           p_graph_html6=p_graph_html6,
+                           p_graph_html7=p_graph_html7
+                           )
+                           
+                           
+                           
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

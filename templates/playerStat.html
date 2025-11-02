@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Player Statistics</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚽ Indian Super League ⚽</h1>
+            <p>Comprehensive Analytics Dashboard</p>
+            <div class="nav-tabs">
+                <a href="{{ url_for('index') }}"
+                    class="tab {% if request.endpoint == 'index' %}active{% endif %}">Matches Stat</a>
+                <a href="{{ url_for('player_stat') }}"
+                    class="tab {% if request.endpoint == 'player_stat' %}active{% endif %}">Player Stats</a>
+            </div>
+        </div>
+    </div>
+    <h1>Player Statistics 2024-2025 Season</h1><br>
+
+    <!-- ================================= Text based output ======================================== -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">⚽ {{ total_goals|safe }} </div>
+            <div class="stat-label">Total Goals</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">🤝 {{ total_assists|safe }} </div>
+            <div class="stat-label">Total Assists</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">🟨 {{ total_yellow_cards|safe }} </div>
+            <div class="stat-label">Total Yellow Cards</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">🟥 {{ total_red_cards|safe }} </div>
+            <div class="stat-label">Total Red Cards</div>
+        </div>
+    </div>
+
+
+    <!-- ================================== Charts based output ======================================= -->
+    <div class="chart-grid">
+        <div class="chart">
+            {{ p_graph_html1|safe }}
+        </div>
+
+        <div class="chart-row-2">
+            <div class="chart">
+                {{ p_graph_html2|safe }}
+            </div>
+            <div class="chart">
+                {{ p_graph_html3|safe }}
+            </div>
+        </div>
+        <div class="chart-row-2">
+            <div class="chart">
+                {{ p_graph_html4|safe }}
+            </div>
+            <div class="chart">
+                {{ p_graph_html6|safe }}
+            </div>
+
+        </div>
+
+        <div class="chart">
+            {{ p_graph_html5|safe }}
+        </div>
+
+        <div class="chart-row-2">
+            <div class="chart">
+                {{ p_graph_html7|safe }}
+            </div>
+            <div class="chart">
+                
+            </div>
+
+        </div>
+
+
+        <script>
+            window.addEventListener('load', function () {
+                // This triggers Plotly to recalculate the chart size
+                const charts = document.querySelectorAll('.chart div.js-plotly-plot');
+                charts.forEach(chart => {
+                    Plotly.Plots.resize(chart);
+                });
+            });
+
+            // Also fix when window resizes
+            window.addEventListener('resize', function () {
+                const charts = document.querySelectorAll('.chart div.js-plotly-plot');
+                charts.forEach(chart => {
+                    Plotly.Plots.resize(chart);
+                });
+            });
+        </script>
+
+</body>
+
+</html>

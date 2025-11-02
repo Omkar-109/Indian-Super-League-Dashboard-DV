@@ -24,6 +24,7 @@ def index():
     total_seasons = df['Year'].nunique()
 
 
+    # ====================== CHARTS ===========================================
     
     # ==================== CHART 1: Goals Trend Over Time ====================
     trend_data = df.groupby('Date')['total_goals'].mean().reset_index()

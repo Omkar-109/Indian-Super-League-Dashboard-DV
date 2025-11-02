@@ -156,6 +156,9 @@ def player_stat():
     total_assists = df_players["Assists"].sum()
     total_yellow_cards = df_players["Yellow_Cards"].sum()
     total_red_cards = df_players["Red_Cards"].sum()
+    corr_age_minutes = df_players["Age"].corr(df_players["Minutes"])
+    corr_age_minutes = round(corr_age_minutes, 2)
+   
 
     # ====================== CHARTS ===========================================
 
@@ -181,11 +184,32 @@ def player_stat():
     p_fig3.update_layout(template='plotly_white')
 
     # ============== Top 5 Players by Starts ========================
-    top_starts = df_players.sort_values("Starts", ascending=False).head(5)
-    p_fig4 = px.bar(top_starts, x="Player", y="Starts", color="Squad",
-              title="Top 5 Players by Starts", text="Starts")
-    p_fig4.update_traces(textposition='outside')
-    p_fig4.update_layout(template='plotly_white')
+    # Create Age Groups
+    bins = [15, 22, 27, 32, 37, 45]
+    labels = ['<23', '23-27', '28-32', '33-37', '38+']
+    df_players['Age_Group'] = pd.cut(df_players['Age'], bins=bins, labels=labels, right=False)
+
+    # Group by Club and Age Group
+    age_goal = df_players.groupby(['Squad', 'Age_Group'])['Goals'].mean().reset_index()
+
+    # Create interactive heatmap
+    p_fig4 = px.density_heatmap(
+        age_goal,
+        x='Age_Group',
+        y='Squad',
+        z='Goals',
+        color_continuous_scale='Viridis',
+        title='Average Goals Scored by Age Group Across Clubs',
+        labels={'Goals': 'Avg Goals'}
+    )
+
+    p_fig4.update_layout(
+        xaxis_title="Age Group",
+        yaxis_title="Club",
+        title_x=0.5,
+        template='plotly_white'
+    )
+    
 
     # =============== Average Age of Players by Club =================
     avg_age_club = df_players.groupby("Squad")["Age"].mean().reset_index()
@@ -213,9 +237,40 @@ def player_stat():
 
     p_fig7 = px.pie(player_counts, names='Type', values='Count',
               color='Type', title="Indian vs Foreign Players Distribution",
-              color_discrete_map={'Indian':'#008000', 'Foreign':'#FF6347'})
+              color_discrete_map={'Indian':"#0088FF", 'Foreign':"#FF44BB"})
     p_fig7.update_layout(template='plotly_white')
 
+    # ========================= Age Distribution of Players by Club =======================
+    p_fig8 = px.box(df_players, x="Age", y="Squad", color="Squad",
+    title="Age Distribution of Players by Club",
+    points="all",  # shows all player points
+    template="plotly_white"
+    )
+    p_fig8.update_layout(showlegend=False)
+
+    df_players['Player Type'] = df_players['Nation'].apply(lambda x: 'Indian' if 'IND' in x else 'Foreign')
+
+    # =================== Goals Scored by Indian vs Foreign Players for Each Club =====================
+    
+    # Group by club and player type to get total goals
+    club_goal_split = (
+        df_players.groupby(['Squad', 'Player Type'])['Goals']
+        .sum()
+        .reset_index()
+        .sort_values(by='Goals', ascending=False)
+    )
+    # Plot grouped bar chart
+    p_fig9 = px.bar(
+        club_goal_split,
+        x='Squad',
+        y='Goals',
+        color='Player Type',
+        barmode='group',
+        title='Goals Scored by Indian vs Foreign Players for Each Club',
+        text='Goals'
+    )
+    p_fig9.update_layout( xaxis_title='Club', yaxis_title='Total Goals', legend_title='Player Type',title_x=0.5
+    )
 
 
 
@@ -230,6 +285,11 @@ def player_stat():
     p_graph_html5 = p_fig5.to_html(full_html=False)
     p_graph_html6 = p_fig6.to_html(full_html=False)
     p_graph_html7 = p_fig7.to_html(full_html=False)
+    p_graph_html8 = p_fig8.to_html(full_html=False)
+    p_graph_html9 = p_fig9.to_html(full_html=False)
+
+
+
 
 
 
@@ -243,6 +303,7 @@ def player_stat():
                            total_assists=total_assists,
                            total_yellow_cards=total_yellow_cards,
                            total_red_cards=total_red_cards,
+                           corr_age_minutes=corr_age_minutes,
                            
                            p_graph_html1=p_graph_html1,
                            p_graph_html2=p_graph_html2,
@@ -250,7 +311,11 @@ def player_stat():
                            p_graph_html4=p_graph_html4,
                            p_graph_html5=p_graph_html5,
                            p_graph_html6=p_graph_html6,
-                           p_graph_html7=p_graph_html7
+                           p_graph_html7=p_graph_html7,
+                           p_graph_html8=p_graph_html8,
+                           p_graph_html9=p_graph_html9
+
+
                            )
                            
                            

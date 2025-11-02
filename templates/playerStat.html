@@ -40,6 +40,10 @@
             <div class="stat-number">🟥 {{ total_red_cards|safe }} </div>
             <div class="stat-label">Total Red Cards</div>
         </div>
+        <div class="stat-card">
+            <div class="stat-number"> {{ corr_age_minutes|safe }} </div>
+            <div class="stat-label">Correlation between Age and Minutes Played</div>
+        </div>
     </div>
 
 
@@ -70,13 +74,16 @@
         <div class="chart">
             {{ p_graph_html5|safe }}
         </div>
+        <div class="chart">
+                {{ p_graph_html8|safe }}
+        </div>
 
         <div class="chart-row-2">
             <div class="chart">
                 {{ p_graph_html7|safe }}
             </div>
             <div class="chart">
-                
+                {{ p_graph_html9|safe }}
             </div>
 
         </div>

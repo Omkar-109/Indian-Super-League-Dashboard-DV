@@ -108,9 +108,24 @@ def index():
                   color_discrete_sequence=px.colors.qualitative.Pastel)
     fig6.update_traces(texttemplate='%{text:.0f}', textposition='outside')
     fig6.update_layout(template='plotly_white', showlegend=False)
+    
+
+    # Chart 7: Monthly Goal Trend
+    monthly_goals = df.groupby('month_name')['total_goals'].sum().reindex([
+        'January','February','March','April','May','June','July','August','September','October','November','December'
+    ]).dropna().reset_index()
+
+    fig7 = px.bar(monthly_goals, x='month_name', y='total_goals',
+                title='📈 Total Goals by Month (Seasonal Trend)',
+                color='total_goals',
+                color_continuous_scale='Agsunset')
+    fig7.update_layout(template='plotly_white', xaxis_title='Month', yaxis_title='Total Goals')
+
+    
+
 
     # ==================== Generate HTML for all charts ====================
-    graphs = [fig.to_html(full_html=False) for fig in [fig1, fig2, fig3, fig4, fig5, fig6]]
+    graphs = [fig.to_html(full_html=False) for fig in [fig1, fig2, fig3, fig4, fig5, fig6, fig7]]
 
     # ==================== Render to Template ====================
     return render_template(
@@ -125,8 +140,6 @@ def index():
         leaderboard=leaderboard,
         graphs=graphs
     )
-
-
 
 
 # player stat dashboard

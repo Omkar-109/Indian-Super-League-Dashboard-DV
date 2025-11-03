@@ -100,7 +100,7 @@ def index():
     fig5.update_layout(template='plotly_white')
 
     # Chart 6: Attendance Distribution by Venue
-    # Horizontal box plot with colors, no legend
+
     fig6 = px.box(
         df,
         y='Venue',           # Horizontal layout

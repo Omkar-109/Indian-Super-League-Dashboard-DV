@@ -132,11 +132,13 @@ def index():
                 color_continuous_scale='Agsunset')
     fig7.update_layout(template='plotly_white', xaxis_title='Month', yaxis_title='Total Goals')
 
-    
-
+    # Chart 8: Monthly Goal Trend
+    fig8 = px.violin(df, x='Year', y='total_goals', box=True, points='all',
+                 title='Distribution of Total Goals per Match Across Years')
+    fig8.update_layout(template='plotly_white')
 
     # ==================== Generate HTML for all charts ====================
-    graphs = [fig.to_html(full_html=False) for fig in [fig1, fig2, fig3, fig4, fig5, fig6, fig7]]
+    graphs = [fig.to_html(full_html=False) for fig in [fig1, fig2, fig3, fig4, fig5, fig6, fig7, fig8]]
 
     # ==================== Render to Template ====================
     return render_template(

@@ -242,8 +242,8 @@ def player_stat():
     p_fig6.update_layout(template='plotly_white')
 
     # ======================= India vs Foreign Players ========================
-    # Extract nationality info — 'inIND' for Indian, others for foreign
-    df_players['Player_Type'] = df_players['Nation'].apply(lambda x: 'Indian' if 'in' in x.lower() else 'Foreign')
+    # Extract nationality info — 'IND' for Indian, others for foreign
+    df_players['Player_Type'] = df_players['Nation'].apply(lambda x: 'Indian' if 'IND' in x else 'Foreign')
 
     player_counts = df_players['Player_Type'].value_counts().reset_index()
     player_counts.columns = ['Type', 'Count']

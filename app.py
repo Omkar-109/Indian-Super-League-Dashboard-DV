@@ -99,14 +99,25 @@ def index():
     fig5.update_traces(line_color='#bd7ebe', line_width=3, marker_size=10)
     fig5.update_layout(template='plotly_white')
 
-    # Chart 6: Top Venues by Attendance
-    top_venues = df.groupby('Venue')['Attendance'].mean().reset_index().sort_values(by='Attendance', ascending=False).head(5)
-    fig6 = px.bar(top_venues, x='Venue', y='Attendance',
-                  title='🏟️ Top 5 Venues by Average Attendance',
-                  text='Attendance',
-                  color='Venue',
-                  color_discrete_sequence=px.colors.qualitative.Pastel)
-    fig6.update_traces(texttemplate='%{text:.0f}', textposition='outside')
+    # Chart 6: Attendance Distribution by Venue
+    # Horizontal box plot with colors, no legend
+    fig6 = px.box(
+        df,
+        y='Venue',           # Horizontal layout
+        x='Attendance',
+        color='Venue',       # Different color for each venue
+        title='Attendance Distribution by Venue',
+        color_discrete_sequence=px.colors.qualitative.Set3
+    )
+
+    # Update layout: remove legend, adjust margins
+    fig6.update_layout(
+        showlegend=False,
+        yaxis_title="Venue",
+        xaxis_title="Attendance",
+        height=600,
+        margin=dict(l=100, r=20, t=60, b=60)
+    )
     fig6.update_layout(template='plotly_white', showlegend=False)
     
 
@@ -183,7 +194,7 @@ def player_stat():
     p_fig3.update_traces(textposition='outside')
     p_fig3.update_layout(template='plotly_white')
 
-    # ============== Top 5 Players by Starts ========================
+    # ============== Average Goals Scored by Age Group Across Clubs ========================
     # Create Age Groups
     bins = [15, 22, 27, 32, 37, 45]
     labels = ['<23', '23-27', '28-32', '33-37', '38+']
